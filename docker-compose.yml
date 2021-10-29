@@ -1,0 +1,14 @@
+version: "3.7"
+
+services:
+  backend:
+    container_name: sat
+    restart: always
+    build:
+      context: ./sat
+      dockerfile: Dockerfile
+    command: python -u sat/src/app.py
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/opt/data
