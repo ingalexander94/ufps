@@ -24,3 +24,12 @@ class Connection:
         cursor.close()
         return data
         
+    def queryMultiple(self, sql):
+        cursor = self.connect.cursor()
+        cursor.execute(sql) 
+        columns = [col[0].lower() for col in cursor.description]
+        cursor.rowfactory = lambda *args: dict(zip(columns, args))
+        data = cursor.fetchall()
+        cursor.close()
+        return data
+        

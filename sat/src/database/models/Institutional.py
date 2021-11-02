@@ -1,6 +1,6 @@
 import re
 from database.config import Connection
-from util import response
+from util import response, helpers
 
 class Institutional:
     
@@ -18,31 +18,29 @@ class Institutional:
         data = db.querySimple(f"{sql} WHERE {type}='{value}'") 
         db.close()
         if data:
-            data["nombre"] = data["nombre"].rstrip(),
-            data["apellido"] = data["apellido"].rstrip(),
-            if user == "student":
-                 data = {
-                     **data,
-                    "foto":"http://placehold.it/32x32",
-                    "sexo": "male",
-                    "semestre":1,
-                    "promedio": 3.25,
-                    "promedioPonderadoAcomulado": 3.25,
-                    "creditosAprobados": 132,
-                    "creditosTotales": 141,
-                    "telefono": "+1 (822) 570-2027",
-                    "direccion": "736 Java Street, Wakulla, Illinois, 4799",
-                    "fechaIngreso": "Tue Jun 29 2018 19:29:00 GMT-0500"
-                }
-            else:
-                data = {
-                    **data,
-                    "foto":"http://placehold.it/32x32",
-                    "sexo": "male",
-                    "esActivo": True,
-                    "programa": "Ingeniería de Sistemas",
-                    "telefono": "+1 (819) 517-2534",
-                    "direccion": "348 Saratoga Avenue, Woodruff, Iowa, 5612"
-                }
+            data["nombre"] = data["nombre"].rstrip()
+            data["apellido"] = data["apellido"].rstrip()
+            if user == "teacher":
+                data["esActivo"] = data["esactivo"] == "TRUE"
+                del data["esactivo"]
         return response.sendError("No se obtuvierón resultados",404) if not data else response.sendSuccess("Usuario obtenido con exito", data)
+    
+    def getCourses(self, sql, code, user):
+        if not code or not code.isnumeric() or len(code) < 5 or len(code) > 7 :
+                return response.sendError("El código es incorrecto", 400)
+        db = Connection() 
+        if user == "student":
+            codeProgram = code[0:3]
+            codeStudent = code[3:7]
+            sql = f"{sql} WHERE  materias_matriculadas.cod_carrera = '{codeProgram}' AND  materias_matriculadas.cod_alumno = '{codeStudent}' GROUP BY materias_matriculadas.cod_alumno, materias_matriculadas.cod_carrera, materias_matriculadas.cod_car_mat, materias_matriculadas.cod_mat_mat, horario.grupo, materia.nombre, materia.creditos, materia.semestre ,materias_matriculadas.grupo, grupo.cod_profesor"
+        else:
+            sql = f"{sql}  WHERE grupo.cod_profesor = '{code}' GROUP BY materia.nombre, materia.cod_carrera, materia.cod_materia, materia.semestre, materia.creditos, grupo.grupo, grupo.cod_profesor"
+        data = db.queryMultiple(sql) 
+        db.close()
+        
+        if data:
+            convert = helpers.convertStudent if user == "student" else helpers.convertTeacher
+            data = list(map(convert, data))
+        return response.sendError("No se obtuvierón resultados",404) if not data else response.sendSuccess("Cursos obtenidos con exito", data)
+    
     
