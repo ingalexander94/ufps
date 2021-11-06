@@ -28,3 +28,9 @@ def getCourses(_,code=None):
 @token_required
 def getStudentsOfCourse(_,code=None, group=None):
     return instance.getStudentsOfCourse(environment.STUDENTS_OF_COURSE, environment.TOTAL_PAGES, code, group)
+
+@teacher_rest.route("/students-ac012/")
+@teacher_rest.route("/students-ac012/<code>/<group>")
+@token_required
+def getStudentsInAC012(_,code=None, group=None):
+    return instance.getStudentsInAC012(environment.STUDENTS_AC012_BY_COURSE, code, group)

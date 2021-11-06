@@ -28,5 +28,16 @@ class Teacher(Institutional):
             info = { "students": data, "totalPages": totalPages["total"] }
         db.close() 
         return response.sendError("No se obtuvierón resultados",404) if not data else response.sendSuccess("Cursos obtenidos con exito", info)
+    
+    def getStudentsInAC012(self, sql, code, group):
+        if not code or not group or group.isnumeric() or not code.isnumeric() or len(code) != 7 or len(group) != 1 :
+                return response.sendError("El código o el grupo es incorrecto", 400)  
+        db = Connection() 
+        codeProgram = code[0:3]
+        codeCourse = code[3:7] 
+        sql = f"{sql}" %(codeProgram, codeCourse, group, "CURSO DE FORMACION%")
+        data = db.queryMultiple(sql)   
+        db.close() 
+        return response.sendSuccess("No se obtuvierón resultados", []) if not data else response.sendSuccess("Estudiante obtenidos con exito", data)
 
 
