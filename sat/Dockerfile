@@ -26,7 +26,7 @@ ENV OCI_INCLUDE_DIR=/opt/oracle/instantclient/sdk/include
 
 COPY requirements.txt requirements.txt
 
-RUN ./install-instantclient.sh \
+RUN chmod +x ./install-instantclient.sh \
     && pip install -r requirements.txt
 
 COPY . .
