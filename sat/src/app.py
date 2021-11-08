@@ -14,7 +14,7 @@ app.register_blueprint(teacher_rest, url_prefix='/teacher')
 
 @app.route('/') 
 def ping():
-    return "Todo ok!" 
+    return f"Hola, {environment.PING}"
 
 if __name__ == '__main__':
     app.run(debug=True, port=environment.PORT, host='0.0.0.0')
