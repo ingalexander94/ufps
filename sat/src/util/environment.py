@@ -3,9 +3,11 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# PING
+PING = os.getenv("PING")
+
 # SERVER 
 PORT = os.getenv("PORT")
-PING = os.getenv("PING")
 
 # DB
 USER_DB = os.getenv("USER_DB")
