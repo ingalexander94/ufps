@@ -20,11 +20,12 @@ class Teacher(Institutional):
         limit = 15 if limit == 0 else limit
         nUntil = page * limit
         nFrom = int(nUntil) - int(limit)
-        sql = f"{sql}" %(codeProgram, codeCourse, group, filter, str(nUntil), str(nFrom))
+        sql = f"{sql}" %("%MOD.ACU.012%", codeProgram, codeCourse, group, filter, str(nUntil), str(nFrom))
         data = db.queryMultiple(sql)   
         if data:
             sql2 = f"{sql2}" %(str(limit), codeProgram, codeCourse, group, filter)
             totalPages = db.querySimple(sql2)
+            data = list(map(lambda student : {**student, "riesgo": 1 if student["ac012"] == "TRUE" else 5, "ac012": student["ac012"] == "TRUE"} , data))
             info = { "students": data, "totalPages": totalPages["total"] }
         db.close() 
         return response.sendError("No se obtuvierón resultados",404) if not data else response.sendSuccess("Cursos obtenidos con exito", info)
@@ -35,8 +36,10 @@ class Teacher(Institutional):
         db = Connection() 
         codeProgram = code[0:3]
         codeCourse = code[3:7] 
-        sql = f"{sql}" %(codeProgram, codeCourse, group, "CURSO DE FORMACION%")
+        sql = f"{sql}" %(codeProgram, codeCourse, group, "%MOD.ACU.012%")
         data = db.queryMultiple(sql)   
+        if data:
+            data = list(map(lambda student : {**student, "ac012": True} , data))
         db.close() 
         return response.sendSuccess("No se obtuvierón resultados", []) if not data else response.sendSuccess("Estudiante obtenidos con exito", data)
 

@@ -23,3 +23,9 @@ def findUserByCode(_,code=None):
 def getCourses(_,code=None):
     return instance.getCourses(environment.COURSES_STUDENT, code, "student")
 
+@student_rest.route("/courses/ac012/")
+@student_rest.route("/courses/ac012/<code>")
+@token_required
+def getCoursesAc012(_,code=None):
+    return instance.getCoursesAc012(environment.COURSES_AC012, code)
+

@@ -15,7 +15,8 @@ class Institutional:
             if not re.fullmatch(regex, value):
                 return response.sendError("El correo es incorrecto", 400)
         db = Connection() 
-        data = db.querySimple(f"{sql} WHERE {type}='{value}'") 
+        sql = f"{sql}" %(value, value, "%MOD.ACU.012%", value, value)  if user == "student" else f"{sql}" %(type, value)  
+        data = db.querySimple(sql) 
         db.close()
         if data:
             data["nombre"] = data["nombre"].rstrip()
@@ -23,6 +24,9 @@ class Institutional:
             if user == "teacher":
                 data["esActivo"] = data["esactivo"] == "TRUE"
                 del data["esactivo"]
+            else:
+                data["riesgo"] = 1 if data["ac012"] == "TRUE" else 5
+                data["ac012"] = data["ac012"] == "TRUE"
         return response.sendError("No se obtuvierón resultados",404) if not data else response.sendSuccess("Usuario obtenido con exito", data)
     
     def getCourses(self, sql, code, user):
@@ -32,9 +36,9 @@ class Institutional:
         if user == "student":
             codeProgram = code[0:3]
             codeStudent = code[3:7]
-            sql = f"{sql} WHERE  materias_matriculadas.cod_carrera = '{codeProgram}' AND  materias_matriculadas.cod_alumno = '{codeStudent}' GROUP BY materias_matriculadas.cod_alumno, materias_matriculadas.cod_carrera, materias_matriculadas.cod_car_mat, materias_matriculadas.cod_mat_mat, horario.grupo, materia.nombre, materia.creditos, materia.semestre ,materias_matriculadas.grupo, grupo.cod_profesor"
+            sql = f"{sql}" %(codeProgram, codeStudent)
         else:
-            sql = f"{sql}  WHERE grupo.cod_profesor = '{code}' GROUP BY materia.nombre, materia.cod_carrera, materia.cod_materia, materia.semestre, materia.creditos, grupo.grupo, grupo.cod_profesor"
+            sql = f"{sql}" %(code)
         data = db.queryMultiple(sql) 
         db.close()
         
