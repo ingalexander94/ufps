@@ -3,6 +3,7 @@ from flask_cors import CORS
 from util import environment
 from routes.student_router import student_rest
 from routes.teacher_router import teacher_rest
+from routes.boss_router import boss_rest
 
 app = Flask(__name__)
 CORS(app)  
@@ -11,6 +12,7 @@ app.config["SECRET_KEY"] = environment.SECRET_KEY
 # Routes
 app.register_blueprint(student_rest, url_prefix='/student')
 app.register_blueprint(teacher_rest, url_prefix='/teacher')
+app.register_blueprint(boss_rest, url_prefix='/boss')
 
 @app.route('/') 
 def ping():
