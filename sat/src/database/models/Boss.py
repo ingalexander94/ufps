@@ -8,6 +8,8 @@ class Boss:
         db = Connection() 
         sql = f"{sql}" %(program, semester)
         data = db.queryMultiple(sql) 
+        if data:
+            data = list(map(lambda course : {**course, "grupos": []}, data))
         db.close()
         return response.sendError("No se obtuvierón resultados", 404) if not data else response.sendSuccess("Cursos obtenidos con exito", data)
     
@@ -28,4 +30,13 @@ class Boss:
         data = db.querySimple(sql) 
         db.close()
         return response.sendError("No se obtuvierón resultados", 404) if not data["semestres"] else response.sendSuccess("Cantidad de semestres obtenida con exito", data)
+     
+    def getGroup(self, sql, course, program, group):
+        if not program or not program.isnumeric() or len(program) != 3:
+            return response.sendError("El código del programa es incorrecto",400)
+        db = Connection() 
+        sql = f"{sql}" %(program, course, group)
+        data = db.querySimple(sql) 
+        db.close()
+        return response.sendError("No se obtuvierón resultados", 404) if not data else response.sendSuccess("Grupo obtenido con exito", data)
     

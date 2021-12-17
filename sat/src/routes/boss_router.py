@@ -18,6 +18,12 @@ def coursesOfSemester(_, semester=None, program=None):
 def groupsOfCourse(_, program=None, course=None):
     return instance.getGroupsOfCourse(environment.GROUPS_BY_COURSE,course, program)
 
+@boss_rest.route('/courses/group/')
+@boss_rest.route('/courses/group/<program>/<course>/<group>')
+@token_required
+def group(_, program=None, course=None, group=None):
+    return instance.getGroup(environment.GROUP_BY_CODE, course, program, group)
+
 @boss_rest.route('/semesters/')
 @boss_rest.route('/semesters/<program>')
 @token_required
